@@ -7,6 +7,7 @@ declare -A APP_LABELS=(
   [unity]="Unity Hub"
   [vscode]="Visual Studio Code"
   [dbeaver]="DBeaver"
+  [bruno]="Bruno"
   [node]="Node.js"
   [npm]="npm"
   [angular]="Angular CLI"
@@ -24,7 +25,7 @@ declare -A APP_LABELS=(
 )
 
 DEV_APPS=(
-  docker dotnet mysql unity vscode dbeaver node npm angular ncu codex
+  docker dotnet mysql unity vscode dbeaver bruno node npm angular ncu codex
   github_cli atlassian_cli
 )
 PRODUCTIVITY_APPS=(

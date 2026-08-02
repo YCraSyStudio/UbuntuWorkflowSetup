@@ -75,4 +75,5 @@ install_selected_apps() {
   if is_selected chromium; then install_snap_if_missing chromium; fi
   if is_selected telegram; then install_snap_if_missing telegram-desktop; fi
   if is_selected dbeaver; then install_snap_if_missing dbeaver-ce --classic; fi
+  if is_selected bruno; then install_snap_if_missing bruno; fi
 }
