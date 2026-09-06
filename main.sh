@@ -32,7 +32,7 @@ configure_external_repositories
 install_selected_packages
 install_selected_apps
 install_node_tools
-install_codex
+install_chatgpt
 install_yed
 install_gnome_extensions
 configure_services

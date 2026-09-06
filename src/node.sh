@@ -45,16 +45,3 @@ if [[ "$INSTALL_NCU" == 1 &&
 fi
 EOF_NODE
 }
-
-install_codex() {
-  if ! is_selected codex; then return; fi
-
-  if [[ -x "$USER_HOME/.local/bin/codex" ]]; then
-    log "$("$USER_HOME/.local/bin/codex" --version) ya está instalado"
-    return
-  fi
-
-  log "Instalar Codex CLI"
-  run_as_user env CODEX_NON_INTERACTIVE=1 \
-    bash -c 'curl -fsSL https://chatgpt.com/codex/install.sh | sh'
-}

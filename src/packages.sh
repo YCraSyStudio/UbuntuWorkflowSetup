@@ -174,8 +174,14 @@ install_selected_packages() {
   if is_selected mysql; then
     packages+=(default-libmysqlclient-dev mysql-client mysql-server)
   fi
+  if is_selected postgresql; then
+    packages+=(postgresql postgresql-client)
+  fi
   if is_selected unity; then packages+=(unityhub); fi
   if is_selected yed; then packages+=(default-jre); fi
+  if is_selected qemu; then
+    packages+=(qemu-kvm qemu-utils libvirt-daemon-system libvirt-clients virt-manager)
+  fi
 
   if ((${#packages[@]} > 0)); then
     sudo apt install -y "${packages[@]}"

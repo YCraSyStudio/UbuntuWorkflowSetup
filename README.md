@@ -60,6 +60,7 @@ aplicaciones automáticamente.
 - Docker
 - .NET SDK
 - MySQL
+- PostgreSQL (servidor y cliente)
 - Unity Hub
 - Visual Studio Code
 - DBeaver
@@ -68,9 +69,10 @@ aplicaciones automáticamente.
   - npm
   - Angular CLI
   - npm-check-updates
-- Codex CLI
+- ChatGPT
 - GitHub CLI
 - Atlassian CLI
+- QEMU/KVM con Virtual Machine Manager, para crear y gestionar máquinas virtuales
 
 ### Productividad
 
@@ -95,8 +97,8 @@ Después de confirmar la selección, el script:
 4. Configura los repositorios externos de las aplicaciones seleccionadas.
 5. Instala los paquetes APT y las aplicaciones Snap.
 6. Instala y configura las herramientas de Node.js seleccionadas.
-7. Instala Codex CLI, yEd y las extensiones de GNOME seleccionadas.
-8. Activa los servicios de Docker y MySQL cuando corresponda.
+7. Instala ChatGPT, yEd y las extensiones de GNOME seleccionadas.
+8. Activa los servicios de Docker, MySQL, PostgreSQL y el socket de libvirt cuando corresponda.
 9. Elimina paquetes que ya no sean necesarios.
 10. Muestra las versiones instaladas y ofrece reiniciar el equipo.
 
@@ -109,8 +111,15 @@ cuenta que:
 - Elimina Firefox, la documentación de GNOME, Yelp y Vim si están instalados.
 - Ejecuta `apt autoremove --purge` al finalizar.
 - Si seleccionas Docker, añade el usuario actual al grupo `docker`.
+- Si seleccionas QEMU/KVM, instala `qemu-kvm`, `qemu-utils`,
+  `libvirt-daemon-system`, `libvirt-clients` y `virt-manager` desde Ubuntu,
+  y añade el usuario actual a los grupos `libvirt` y `kvm`.
 - Descarga software y claves de repositorios desde sus proveedores oficiales.
-- La instalación de NVM y Codex CLI ejecuta scripts descargados de Internet.
+- La instalación de NVM ejecuta un script descargado de Internet.
+- ChatGPT instala el paquete oficial `.deb` de ChatGPT para `amd64` o
+  `arm64`, que configura el repositorio de OpenAI para futuras actualizaciones.
+  La versión preliminar admite Ubuntu Desktop 24.04 LTS y 26.04 LTS; consulta la
+  [documentación oficial para Linux](https://learn.chatgpt.com/docs/linux/linux-app).
 
 Revisa el código y guarda tu trabajo antes de usarlo en un equipo importante.
 El instalador muestra una confirmación separada antes de reiniciar.
@@ -143,8 +152,15 @@ Dependiendo de las opciones elegidas, puede ser necesario:
   extensiones de GNOME.
 - Comprobar en Extension Manager que las extensiones estén activadas.
 - Iniciar sesión en Visual Studio Code para sincronizar su configuración.
-- Ejecutar `codex --version` para comprobar Codex CLI.
+- Abrir ChatGPT desde el menú de aplicaciones, iniciar sesión con tu cuenta.
 - Instalar el editor de Unity desde Unity Hub.
+- Abrir la consola de PostgreSQL con `sudo -u postgres psql` para crear usuarios
+  y bases de datos. Se instala la versión disponible en los repositorios de Ubuntu.
+- Para QEMU/KVM, cerrar sesión y volver a entrar para aplicar los grupos
+  `libvirt` y `kvm`. Después, abrir Virtual Machine Manager (`virt-manager`) y
+  crear una máquina virtual con una ISO de Ubuntu. La ISO y la máquina virtual
+  se eligen desde el gestor tras la instalación de las herramientas.
+  La aceleración KVM requiere virtualización por hardware habilitada en BIOS/UEFI.
 
 ## Solución de problemas
 

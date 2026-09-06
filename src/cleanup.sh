@@ -30,6 +30,11 @@ configure_services() {
     sudo usermod -aG docker "$USER_NAME"
   fi
   if is_selected mysql; then sudo systemctl enable --now mysql; fi
+  if is_selected postgresql; then sudo systemctl enable --now postgresql; fi
+  if is_selected qemu; then
+    sudo systemctl enable --now libvirtd.socket
+    sudo usermod -aG libvirt,kvm "$USER_NAME"
+  fi
 }
 
 cleanup_system() {
@@ -76,6 +81,14 @@ print_versions() {
     printf '  %-24s %s\n' ".NET SDK" "$(dotnet --version 2>/dev/null || true)"
   fi
   if is_selected mysql; then print_dpkg_version "MySQL" mysql-server; fi
+  if is_selected postgresql; then
+    print_dpkg_version "PostgreSQL" postgresql
+  fi
+  if is_selected qemu; then
+    print_dpkg_version "QEMU/KVM" qemu-kvm
+    print_dpkg_version "libvirt" libvirt-daemon-system
+    print_dpkg_version "Virtual Machine Manager" virt-manager
+  fi
   if is_selected unity; then print_dpkg_version "Unity Hub" unityhub; fi
   if is_selected vscode; then print_dpkg_version "Visual Studio Code" code; fi
   if is_selected github_cli; then print_dpkg_version "GitHub CLI" gh; fi
@@ -113,9 +126,8 @@ if [[ "$SHOW_NCU" == 1 ]]; then
 fi
 EOF_VERSIONS
   fi
-  if is_selected codex; then
-    printf '  %-24s %s\n' "Codex CLI" \
-      "$("$USER_HOME/.local/bin/codex" --version 2>/dev/null || true)"
+  if is_selected chatgpt; then
+    print_dpkg_version "ChatGPT" chatgpt
   fi
   if is_selected yed; then printf '  %-24s v%s\n' "yEd" "$YED_VERSION"; fi
   if is_selected gnome_manager; then
@@ -140,11 +152,19 @@ print_manual_steps() {
   if is_selected vscode; then
     manual_step "Inicia sesión en VS Code para sincronizar la configuración."
   fi
-  if is_selected codex; then
-    manual_step "Ejecuta codex --version para comprobar Codex CLI."
+  if is_selected chatgpt; then
+    manual_step "Abre ChatGPT desde el menú de aplicaciones, inicia sesión con tu cuenta."
   fi
   if is_selected unity; then
     manual_step "Instala manualmente el editor desde Unity Hub."
+  fi
+  if is_selected postgresql; then
+    manual_step "Abre la consola de PostgreSQL con sudo -u postgres psql para crear tus usuarios y bases de datos."
+  fi
+  if is_selected qemu; then
+    manual_step "Cierra sesión y vuelve a entrar para aplicar los grupos libvirt y kvm."
+    manual_step "Abre Virtual Machine Manager (virt-manager) y crea una máquina virtual usando una ISO de Ubuntu."
+    manual_step "Para usar aceleración KVM, activa la virtualización en la BIOS/UEFI del equipo."
   fi
 }
 

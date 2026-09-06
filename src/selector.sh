@@ -2,8 +2,10 @@
 
 declare -A APP_LABELS=(
   [docker]="Docker"
+  [qemu]="QEMU/KVM (Virtual Machine Manager)"
   [dotnet]=".NET SDK"
   [mysql]="MySQL"
+  [postgresql]="PostgreSQL"
   [unity]="Unity Hub"
   [vscode]="Visual Studio Code"
   [dbeaver]="DBeaver"
@@ -12,7 +14,7 @@ declare -A APP_LABELS=(
   [npm]="npm"
   [angular]="Angular CLI"
   [ncu]="npm-check-updates"
-  [codex]="Codex CLI"
+  [chatgpt]="ChatGPT"
   [github_cli]="GitHub CLI"
   [atlassian_cli]="Atlassian CLI"
   [yed]="yEd"
@@ -25,8 +27,8 @@ declare -A APP_LABELS=(
 )
 
 DEV_APPS=(
-  docker dotnet mysql unity vscode dbeaver bruno node npm angular ncu codex
-  github_cli atlassian_cli
+  docker dotnet mysql postgresql unity vscode dbeaver bruno node npm angular ncu chatgpt
+  github_cli atlassian_cli qemu
 )
 PRODUCTIVITY_APPS=(
   yed chromium chrome telegram

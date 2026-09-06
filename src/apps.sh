@@ -1,5 +1,47 @@
 #!/usr/bin/env bash
 
+install_chatgpt() {
+  local architecture package_dir package_file download_url
+
+  if ! is_selected chatgpt; then return; fi
+
+  if dpkg-query -W -f='${Status}' chatgpt 2>/dev/null | grep -qx 'install ok installed'; then
+    log "ChatGPT ya está instalado"
+    return
+  fi
+
+  architecture="$(dpkg --print-architecture)"
+  case "$architecture" in
+    amd64 | arm64) ;;
+    *)
+      printf 'ChatGPT no admite la arquitectura %s.\n' "$architecture" >&2
+      return 1
+      ;;
+  esac
+
+  # Paquetes oficiales: https://learn.chatgpt.com/docs/linux/linux-app
+  download_url="https://persistent.oaistatic.com/codex-app-prod/linux/deb/latest/chatgpt_${architecture}.deb"
+  package_dir="$(mktemp -d)"
+  package_file="$package_dir/chatgpt_${architecture}.deb"
+  log "Descargar e instalar ChatGPT"
+  if ! curl -fsSL "$download_url" -o "$package_file"; then
+    rm -f "$package_file"
+    rmdir "$package_dir"
+    return 1
+  fi
+
+  # Permitir que el usuario _apt lea el paquete descargado.
+  chmod 0755 "$package_dir"
+  chmod 0644 "$package_file"
+  if ! sudo apt install -y "$package_file"; then
+    rm -f "$package_file"
+    rmdir "$package_dir"
+    return 1
+  fi
+  rm -f "$package_file"
+  rmdir "$package_dir"
+}
+
 install_yed() {
   local archive install_root install_dir launcher desktop_file
 
