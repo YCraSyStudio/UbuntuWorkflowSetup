@@ -156,6 +156,22 @@ configure_external_repositories() {
   fi
 }
 
+# En Ubuntu recientes `qemu-kvm` es solo un paquete virtual y `apt` no sabe
+# resolverlo solo (No candidate). El proveedor estándar y estable en todas las
+# versiones es `qemu-system-x86`; se usa `qemu-system-x86-hwe` como alternativa
+# y `qemu-kvm` solo como último recurso. Devuelve el nombre del paquete instalable.
+qemu_system_package() {
+  local candidate version
+  for candidate in qemu-system-x86 qemu-system-x86-hwe qemu-kvm; do
+    version="$(apt-cache policy "$candidate" 2>/dev/null | awk '/Candidate:/{print $2; exit}')"
+    if [[ -n "$version" && "$version" != "(none)" ]]; then
+      printf '%s' "$candidate"
+      return 0
+    fi
+  done
+  printf '%s' qemu-system-x86
+}
+
 install_selected_packages() {
   local packages=()
 
@@ -180,7 +196,7 @@ install_selected_packages() {
   if is_selected unity; then packages+=(unityhub); fi
   if is_selected yed; then packages+=(default-jre); fi
   if is_selected qemu; then
-    packages+=(qemu-kvm qemu-utils libvirt-daemon-system libvirt-clients virt-manager)
+    packages+=("$(qemu_system_package)" qemu-utils libvirt-daemon-system libvirt-clients virt-manager)
   fi
 
   if ((${#packages[@]} > 0)); then

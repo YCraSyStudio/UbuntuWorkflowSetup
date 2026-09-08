@@ -1,70 +1,70 @@
 # UbuntuWorkflowSetup
 
-Instalador interactivo para preparar un equipo Ubuntu con aplicaciones de
-desarrollo, productividad y extensiones de GNOME.
+Interactive installer to prepare an Ubuntu machine with development,
+productivity, and GNOME extension applications.
 
-El script permite elegir qué componentes instalar y automatiza la actualización
-del sistema, la configuración de repositorios, la instalación de paquetes y
-algunas tareas posteriores de limpieza.
+The script lets you choose which components to install and automates updating
+the system, configuring repositories, installing packages, and some post-install
+cleanup tasks.
 
-## Requisitos
+## Requirements
 
-- Ubuntu 24.04 o una versión posterior.
-- Una cuenta con permisos de `sudo`.
-- Conexión a Internet.
-- Una terminal interactiva para poder utilizar el selector de aplicaciones.
+- Ubuntu 24.04 or later.
+- An account with `sudo` privileges.
+- An Internet connection.
+- An interactive terminal to use the application selector.
 
-El instalador solo admite Ubuntu. Antes de realizar cambios comprueba el sistema
-operativo y detiene la ejecución si la versión no es compatible.
+The installer only supports Ubuntu. Before making any changes it checks the
+operating system and stops the execution if the version is not compatible.
 
-## Uso
+## Usage
 
-Clona el repositorio y entra en su directorio:
+Clone the repository and enter its directory:
 
 ```bash
 git clone https://github.com/YarCrasy/UbuntuWorkflowSetup.git
 cd UbuntuWorkflowSetup
 ```
 
-Ejecuta el instalador:
+Run the installer:
 
 ```bash
 bash main.sh
 ```
 
-Al comenzar se solicitará la contraseña de `sudo` y aparecerá el selector de
-aplicaciones.
+When it starts you will be asked for your `sudo` password and the application
+selector will appear.
 
-## Controles del selector
+## Selector controls
 
-| Tecla | Acción |
+| Key | Action |
 | --- | --- |
-| `↑` / `↓` | Moverse por las opciones |
-| Rueda del ratón | Moverse por las opciones |
-| `Espacio` | Seleccionar o deseleccionar una opción |
-| `T` | Seleccionar todo |
-| `N` | Deseleccionar todo |
-| `Enter` | Confirmar la selección y comenzar |
+| `↑` / `↓` | Move through the options |
+| Mouse wheel | Move through the options |
+| `Space` | Select or deselect an option |
+| `T` | Select all |
+| `N` | Deselect all |
+| `Enter` | Confirm the selection and start |
 
-Todas las opciones aparecen seleccionadas inicialmente. Node.js y GNOME
-Extension Manager incluyen opciones dependientes indentadas en el menú. Al
-seleccionar una dependencia también se selecciona su componente principal.
+All options are selected by default. Node.js and GNOME Extension Manager include
+indented dependent options in the menu. When you select a dependency its parent
+component is also selected.
 
-Si se ejecuta sin una terminal interactiva, el instalador seleccionará todas las
-aplicaciones automáticamente.
+If you run it without an interactive terminal, the installer selects every
+application automatically.
 
-## Aplicaciones disponibles
+## Available applications
 
-### Herramientas de desarrollo
+### Development tools
 
 - Docker
 - .NET SDK
 - MySQL
-- PostgreSQL (servidor y cliente)
+- PostgreSQL (server and client)
 - Unity Hub
 - Visual Studio Code
 - DBeaver
-- Bruno, para explorar y probar APIs
+- Bruno, for exploring and testing APIs
 - Node.js
   - npm
   - Angular CLI
@@ -72,69 +72,71 @@ aplicaciones automáticamente.
 - ChatGPT
 - GitHub CLI
 - Atlassian CLI
-- QEMU/KVM con Virtual Machine Manager, para crear y gestionar máquinas virtuales
+- QEMU/KVM with Virtual Machine Manager, to create and manage virtual machines
 
-### Productividad
+### Productivity
 
 - yEd
 - Chromium
 - Google Chrome
 - Telegram Desktop
 
-### Otros
+### Other
 
 - GNOME Extension Manager
   - Copyous
   - Dash to Panel
 
-## Qué hace el instalador
+## What the installer does
 
-Después de confirmar la selección, el script:
+After confirming the selection, the script:
 
-1. Actualiza los paquetes de Ubuntu.
-2. Elimina algunas aplicaciones preinstaladas no deseadas.
-3. Instala las herramientas base necesarias.
-4. Configura los repositorios externos de las aplicaciones seleccionadas.
-5. Instala los paquetes APT y las aplicaciones Snap.
-6. Instala y configura las herramientas de Node.js seleccionadas.
-7. Instala ChatGPT, yEd y las extensiones de GNOME seleccionadas.
-8. Activa los servicios de Docker, MySQL, PostgreSQL y el socket de libvirt cuando corresponda.
-9. Elimina paquetes que ya no sean necesarios.
-10. Muestra las versiones instaladas y ofrece reiniciar el equipo.
+1. Updates the Ubuntu packages.
+2. Removes some unwanted preinstalled applications.
+3. Installs the required base tools.
+4. Configures the external repositories of the selected applications.
+5. Installs the APT packages and Snap applications.
+6. Installs and configures the selected Node.js tools.
+7. Installs the selected ChatGPT, yEd, and GNOME extensions.
+8. Enables the Docker, MySQL, PostgreSQL services, and the libvirt socket when applicable.
+9. Removes packages that are no longer needed.
+10. Shows the installed versions and offers to reboot the machine.
 
-## Avisos importantes
+## Important notices
 
-El script modifica el sistema y utiliza `sudo`. Antes de ejecutarlo, ten en
-cuenta que:
+The script modifies the system and uses `sudo`. Before running it, keep in mind
+that:
 
-- Actualiza todos los paquetes mediante `apt upgrade`.
-- Elimina Firefox, la documentación de GNOME, Yelp y Vim si están instalados.
-- Ejecuta `apt autoremove --purge` al finalizar.
-- Si seleccionas Docker, añade el usuario actual al grupo `docker`.
-- Si seleccionas QEMU/KVM, instala `qemu-kvm`, `qemu-utils`,
-  `libvirt-daemon-system`, `libvirt-clients` y `virt-manager` desde Ubuntu,
-  y añade el usuario actual a los grupos `libvirt` y `kvm`.
-- Descarga software y claves de repositorios desde sus proveedores oficiales.
-- La instalación de NVM ejecuta un script descargado de Internet.
-- ChatGPT instala el paquete oficial `.deb` de ChatGPT para `amd64` o
-  `arm64`, que configura el repositorio de OpenAI para futuras actualizaciones.
-  La versión preliminar admite Ubuntu Desktop 24.04 LTS y 26.04 LTS; consulta la
-  [documentación oficial para Linux](https://learn.chatgpt.com/docs/linux/linux-app).
+- It updates all packages with `apt upgrade`.
+- It removes Firefox, GNOME documentation, Yelp, and Vim if they are installed.
+- It runs `apt autoremove --purge` at the end.
+- If you select Docker, it adds the current user to the `docker` group.
+- If you select QEMU/KVM, it installs the available QEMU system package
+  (`qemu-system-x86` on current releases, or `qemu-kvm` on older ones) together
+  with `qemu-utils`, `libvirt-daemon-system`, `libvirt-clients`, and
+  `virt-manager` from Ubuntu, and adds the current user to the `libvirt` and
+  `kvm` groups.
+- It downloads software and repository keys from their official providers.
+- The NVM installation runs a script downloaded from the Internet.
+- ChatGPT installs the official ChatGPT `.deb` package for `amd64` or `arm64`,
+  which configures the OpenAI repository for future updates. The preview version
+  supports Ubuntu Desktop 24.04 LTS and 26.04 LTS; see the
+  [official Linux documentation](https://learn.chatgpt.com/docs/linux/linux-app).
 
-Revisa el código y guarda tu trabajo antes de usarlo en un equipo importante.
-El instalador muestra una confirmación separada antes de reiniciar.
+Review the code and back up your work before using it on an important machine.
+The installer shows a separate confirmation before rebooting.
 
-## Versiones configurables
+## Configurable versions
 
-Se pueden cambiar algunas versiones mediante variables de entorno. Por ejemplo:
+You can change some versions using environment variables. For example:
 
 ```bash
 DOTNET_VERSION=10.0 NODE_VERSION=24 bash main.sh
 ```
 
-Variables disponibles:
+Available variables:
 
-| Variable | Valor predeterminado |
+| Variable | Default value |
 | --- | --- |
 | `DOTNET_VERSION` | `10.0` |
 | `NODE_VERSION` | `24` |
@@ -144,31 +146,30 @@ Variables disponibles:
 | `NCU_MAJOR_VERSION` | `22` |
 | `YED_VERSION` | `3.25.1` |
 
-## Después de la instalación
+## After installation
 
-Dependiendo de las opciones elegidas, puede ser necesario:
+Depending on the chosen options, you may need to:
 
-- Cerrar la sesión para aplicar la pertenencia al grupo de Docker y cargar las
-  extensiones de GNOME.
-- Comprobar en Extension Manager que las extensiones estén activadas.
-- Iniciar sesión en Visual Studio Code para sincronizar su configuración.
-- Abrir ChatGPT desde el menú de aplicaciones, iniciar sesión con tu cuenta.
-- Instalar el editor de Unity desde Unity Hub.
-- Abrir la consola de PostgreSQL con `sudo -u postgres psql` para crear usuarios
-  y bases de datos. Se instala la versión disponible en los repositorios de Ubuntu.
-- Para QEMU/KVM, cerrar sesión y volver a entrar para aplicar los grupos
-  `libvirt` y `kvm`. Después, abrir Virtual Machine Manager (`virt-manager`) y
-  crear una máquina virtual con una ISO de Ubuntu. La ISO y la máquina virtual
-  se eligen desde el gestor tras la instalación de las herramientas.
-  La aceleración KVM requiere virtualización por hardware habilitada en BIOS/UEFI.
+- Log out to apply the Docker group membership and load the GNOME extensions.
+- Check in Extension Manager that the extensions are enabled.
+- Sign in to Visual Studio Code to sync its settings.
+- Open ChatGPT from the application menu and sign in with your account.
+- Install the Unity editor from Unity Hub.
+- Open the PostgreSQL console with `sudo -u postgres psql` to create users and
+  databases. The version available in the Ubuntu repositories is installed.
+- For QEMU/KVM, log out and back in to apply the `libvirt` and `kvm` groups.
+  Then open Virtual Machine Manager (`virt-manager`) and create a virtual machine
+  with an Ubuntu ISO. The ISO and the virtual machine are chosen from the manager
+  after the tools are installed. KVM acceleration requires hardware
+  virtualization enabled in BIOS/UEFI.
 
-## Solución de problemas
+## Troubleshooting
 
-Si el proceso se interrumpe, corrige el error indicado y vuelve a ejecutar
-`bash main.sh`. Las operaciones principales comprueban si ciertos componentes ya
-están instalados o configurados, por lo que el script puede volver a ejecutarse.
+If the process is interrupted, fix the reported error and run `bash main.sh`
+again. The main operations check whether certain components are already
+installed or configured, so the script can be run again.
 
-Para revisar errores de sintaxis sin modificar el sistema:
+To check for syntax errors without modifying the system:
 
 ```bash
 bash -n main.sh src/*.sh
