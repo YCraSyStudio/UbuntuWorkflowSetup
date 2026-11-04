@@ -11,6 +11,10 @@ install_base_packages() {
   sudo apt install -y \
     ca-certificates curl git git-lfs gnupg jq snapd unzip
 
+  if is_selected node; then
+    sudo apt install -y libatomic1
+  fi
+
   if is_selected gnome_manager; then
     sudo apt install -y \
       gir1.2-gda-5.0 gir1.2-gsound-1.0 \

@@ -1,0 +1,26 @@
+name: Simulate Ubuntu installation
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  simulate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Check shell syntax
+        run: |
+          for script in main.sh src/*.sh tests/*.sh; do
+            bash -n "$script"
+          done
+      - name: Simulate a fresh installation
+        run: bash tests/simulate-install.sh

@@ -131,7 +131,7 @@ The installer shows a separate confirmation before rebooting.
 You can change some versions using environment variables. For example:
 
 ```bash
-DOTNET_VERSION=10.0 NODE_VERSION=24 bash main.sh
+DOTNET_VERSION=10.0 NODE_VERSION=26 bash main.sh
 ```
 
 Available variables:
@@ -139,11 +139,11 @@ Available variables:
 | Variable | Default value |
 | --- | --- |
 | `DOTNET_VERSION` | `10.0` |
-| `NODE_VERSION` | `24` |
-| `NVM_VERSION` | `v0.40.5` |
+| `NODE_VERSION` | `26` |
+| `NVM_VERSION` | `v0.40.8` |
 | `NPM_MAJOR_VERSION` | `12` |
 | `ANGULAR_MAJOR_VERSION` | `22` |
-| `NCU_MAJOR_VERSION` | `22` |
+| `NCU_MAJOR_VERSION` | `23` |
 | `YED_VERSION` | `3.25.1` |
 
 ## After installation
