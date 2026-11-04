@@ -4,9 +4,15 @@ install_node_tools() {
   if ! is_selected node; then return; fi
 
   log "Instalar Node.js ${NODE_VERSION} y herramientas JavaScript"
-  if [[ ! -s "$USER_HOME/.nvm/nvm.sh" ]]; then
-    run_as_user bash -c \
-      "curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/${NVM_VERSION}/install.sh | bash"
+  if ! run_as_user bash -c '
+    nvm_script="$1/.nvm/nvm.sh"
+    [[ -s "$nvm_script" ]] || exit 1
+    source "$nvm_script" --no-use
+    [[ "$(nvm --version)" == "${2#v}" ]]
+  ' bash "$USER_HOME" "$NVM_VERSION"; then
+    run_as_user bash -o pipefail -c '
+      curl -fsSL "https://raw.githubusercontent.com/nvm-sh/nvm/$1/install.sh" | bash
+    ' bash "$NVM_VERSION"
   fi
 
   run_as_user env \
@@ -20,8 +26,8 @@ install_node_tools() {
 export NVM_DIR="$USER_HOME/.nvm"
 # shellcheck source=/dev/null
 source "$NVM_DIR/nvm.sh"
-nvm install "$NODE_VERSION"
-nvm alias default "$NODE_VERSION"
+nvm install "$NODE_VERSION" || exit $?
+nvm alias default "$NODE_VERSION" || exit $?
 
 global_package_version() {
   local package="$1"
