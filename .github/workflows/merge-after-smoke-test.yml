@@ -1,0 +1,43 @@
+name: Merge after smoke test
+
+on:
+  workflow_run:
+    workflows: [Simulate Ubuntu installation]
+    types: [completed]
+
+permissions:
+  contents: write
+  pull-requests: read
+
+jobs:
+  merge:
+    if: >-
+      github.event.workflow_run.event == 'pull_request' &&
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.head_repository.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Merge the tested commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          run_path="$(jq -r '.workflow_run.path' "$GITHUB_EVENT_PATH")"
+          [[ "${run_path%%@*}" == '.github/workflows/simulate-install.yml' ]] || exit 0
+          sha="$(jq -er '.workflow_run.head_sha' "$GITHUB_EVENT_PATH")"
+          branch="$(jq -er '.workflow_run.head_branch' "$GITHUB_EVENT_PATH")"
+          owner="${GITHUB_REPOSITORY%%/*}"
+
+          number="$(gh api "repos/$GITHUB_REPOSITORY/pulls" --method GET \
+            -f state=open -f base=main -f head="$owner:$branch" |
+            jq -r --arg sha "$sha" --arg repo "$GITHUB_REPOSITORY" '
+              .[] | select(.draft == false and .head.sha == $sha and .head.repo.full_name == $repo) | .number
+            ')"
+
+          if [[ -z "$number" ]]; then
+            echo "No open, ready PR targets main at the tested commit."
+            exit 0
+          fi
+
+          gh api "repos/$GITHUB_REPOSITORY/pulls/$number/merge" --method PUT \
+            -f sha="$sha" -f merge_method=squash
