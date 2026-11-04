@@ -4,6 +4,7 @@ on:
   pull_request:
   push:
     branches: [main]
+    tags: ['v*']
   workflow_dispatch:
 
 permissions:
@@ -11,16 +12,56 @@ permissions:
 
 jobs:
   simulate:
-    runs-on: ubuntu-24.04
-    timeout-minutes: 5
+    strategy:
+      matrix:
+        include:
+          - rid: linux-x64
+            runner: ubuntu-24.04
+          - rid: linux-arm64
+            runner: ubuntu-24.04-arm
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
       - name: Check shell syntax
         run: |
           for script in main.sh src/*.sh tests/*.sh; do
             bash -n "$script"
           done
-      - name: Simulate a fresh installation
-        run: bash tests/simulate-install.sh
+      - name: Publish the standalone installer
+        run: |
+          dotnet publish installer/UbuntuWorkflowSetup.csproj -c Release \
+            -r "${{ matrix.rid }}" -o "$RUNNER_TEMP/publish"
+          test "$(ls -A "$RUNNER_TEMP/publish")" = ubuntu-workflow-setup
+      - name: Simulate a fresh installation using the executable
+        run: bash tests/simulate-install.sh "$RUNNER_TEMP/publish/ubuntu-workflow-setup"
+      - name: Upload the installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: ubuntu-workflow-setup-${{ matrix.rid }}
+          path: ${{ runner.temp }}/publish/ubuntu-workflow-setup
+          if-no-files-found: error
+
+  release:
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    needs: simulate
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+      - name: Publish the executables on GitHub Releases
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          for rid in linux-x64 linux-arm64; do
+            name="ubuntu-workflow-setup-$rid"
+            mv "$name/ubuntu-workflow-setup" "$name.bin"
+          done
+          gh release create "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" \
+            --verify-tag --generate-notes ubuntu-workflow-setup-linux-{x64,arm64}.bin
