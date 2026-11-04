@@ -17,8 +17,10 @@ jobs:
         include:
           - rid: linux-x64
             runner: ubuntu-24.04
+            binary: ubuntu-setup.bin
           - rid: linux-arm64
             runner: ubuntu-24.04-arm
+            binary: ubuntu-setup-arm.bin
     runs-on: ${{ matrix.runner }}
     timeout-minutes: 10
     steps:
@@ -30,21 +32,19 @@ jobs:
           dotnet-version: '10.0.x'
       - name: Check shell syntax
         run: |
-          for script in main.sh src/*.sh tests/*.sh; do
-            bash -n "$script"
-          done
+          bash -n tests/simulate-install.sh
       - name: Publish the standalone installer
         run: |
           dotnet publish installer/UbuntuWorkflowSetup.csproj -c Release \
             -r "${{ matrix.rid }}" -o "$RUNNER_TEMP/publish"
-          test "$(ls -A "$RUNNER_TEMP/publish")" = ubuntu-workflow-setup
+          test "$(ls -A "$RUNNER_TEMP/publish")" = "${{ matrix.binary }}"
       - name: Simulate a fresh installation using the executable
-        run: bash tests/simulate-install.sh "$RUNNER_TEMP/publish/ubuntu-workflow-setup"
+        run: bash tests/simulate-install.sh "$RUNNER_TEMP/publish/${{ matrix.binary }}"
       - name: Upload the installer
         uses: actions/upload-artifact@v4
         with:
           name: ubuntu-workflow-setup-${{ matrix.rid }}
-          path: ${{ runner.temp }}/publish/ubuntu-workflow-setup
+          path: ${{ runner.temp }}/publish/${{ matrix.binary }}
           if-no-files-found: error
 
   release:
@@ -59,9 +59,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          for rid in linux-x64 linux-arm64; do
-            name="ubuntu-workflow-setup-$rid"
-            mv "$name/ubuntu-workflow-setup" "$name.bin"
-          done
           gh release create "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" \
-            --verify-tag --generate-notes ubuntu-workflow-setup-linux-{x64,arm64}.bin
+            --verify-tag --generate-notes \
+            ubuntu-workflow-setup-linux-x64/ubuntu-setup.bin \
+            ubuntu-workflow-setup-linux-arm64/ubuntu-setup-arm.bin

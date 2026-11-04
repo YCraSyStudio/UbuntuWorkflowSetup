@@ -31,15 +31,16 @@ case "$tool" in
   getent) printf '%s:x:%s:%s::%s:/bin/bash\n' "$USER" "$(id -u)" "$(id -g)" "$SIM_HOME" ;;
   dpkg-query|snap) exit 1 ;;
   apt-cache) printf '  Candidate: 1\n' ;;
-  gpg) cat ;;
+  gpg) ;;
   curl)
     case "$*" in
       *raw.githubusercontent.com/nvm-sh/nvm/*)
         cat <<'INSTALL_NVM'
-mkdir -p "$SIM_HOME/.nvm"
-cat > "$SIM_HOME/.nvm/nvm.sh" <<'NVM'
+mkdir -p "$NVM_DIR"
+cat > "$NVM_DIR/nvm.sh" <<'NVM'
 nvm() {
   printf 'nvm %s\n' "$*" >> "$SIM_TRACE"
+  if [[ "$1" == which ]]; then command -v node; fi
 }
 NVM
 INSTALL_NVM
@@ -83,12 +84,8 @@ for tool in sudo getent dpkg-query snap apt-cache gpg curl unzip npm node \
   ln -s mock "$sandbox/bin/$tool"
 done
 
-if (($#)); then
-  installer="$(realpath "$1")"
-  (cd "$sandbox" && "$installer") <<< 'N'
-else
-  bash main.sh <<< 'N'
-fi
+installer="$(realpath "${1:?Pass the compiled installer executable}")"
+(cd "$sandbox" && "$installer") <<< 'N'
 
 for expected in \
     'sudo apt install -y libatomic1' \
