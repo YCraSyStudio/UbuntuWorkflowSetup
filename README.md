@@ -20,15 +20,13 @@ operating system and stops the execution if the version is not compatible.
 ## Usage
 
 Download the executable for your architecture from [GitHub Releases](https://github.com/YCraSyStudio/UbuntuWorkflowSetup/releases).
-Choose `linux-x64` for x86-64 or `linux-arm64` for ARM64. The executable includes
-the .NET runtime and the installer scripts. Bash and the Ubuntu system utilities
-are used to install the selected applications.
+Choose `ubuntu-setup.bin` for x86-64 or `ubuntu-setup-arm.bin` for ARM64. The executable includes the .NET runtime. The C# installer invokes Ubuntu system utilities and uses Bash to load upstream NVM.
 
 For example, on x86-64:
 
 ```bash
-chmod +x ubuntu-workflow-setup-linux-x64.bin
-./ubuntu-workflow-setup-linux-x64.bin
+chmod +x ubuntu-setup.bin
+./ubuntu-setup.bin
 ```
 
 ### Build from source
@@ -44,7 +42,7 @@ Publish and run the installer:
 
 ```bash
 dotnet publish installer/UbuntuWorkflowSetup.csproj -c Release -r linux-x64 -o ./publish
-./publish/ubuntu-workflow-setup
+./publish/ubuntu-setup.bin
 ```
 
 Pushing a version tag such as `v1.0.0` runs the smoke test on both architectures
@@ -58,7 +56,7 @@ selector will appear.
 | Key | Action |
 | --- | --- |
 | `↑` / `↓` | Move through the options |
-| Mouse wheel | Move through the options |
+| `Esc` | Exit the installer |
 | `Space` | Select or deselect an option |
 | `T` | Select all |
 | `N` | Deselect all |
@@ -79,7 +77,7 @@ application automatically.
 - .NET SDK
 - MySQL
 - PostgreSQL (server and client)
-- Unity Hub
+- Unity Hub (x64)
 - Visual Studio Code
 - DBeaver
 - Bruno, for exploring and testing APIs
@@ -96,7 +94,7 @@ application automatically.
 
 - yEd
 - Chromium
-- Google Chrome
+- Google Chrome (x64)
 - Telegram Desktop
 
 ### Other
@@ -149,7 +147,7 @@ The installer shows a separate confirmation before rebooting.
 You can change some versions using environment variables. For example:
 
 ```bash
-DOTNET_VERSION=10.0 NODE_VERSION=26 ./publish/ubuntu-workflow-setup
+DOTNET_VERSION=10.0 NODE_VERSION=26 ./publish/ubuntu-setup.bin
 ```
 
 Available variables:
@@ -187,8 +185,8 @@ If the process is interrupted, fix the reported error and run `bash main.sh`
 again. The main operations check whether certain components are already
 installed or configured, so the script can be run again.
 
-To check for syntax errors without modifying the system:
+To simulate the installation with a published binary without modifying the system:
 
 ```bash
-bash -n main.sh src/*.sh
+bash tests/simulate-install.sh ./publish/ubuntu-setup.bin
 ```

@@ -4,14 +4,11 @@
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <AssemblyName>ubuntu-workflow-setup</AssemblyName>
+    <AssemblyName>ubuntu-setup.bin</AssemblyName>
+    <AssemblyName Condition="'$(RuntimeIdentifier)' == 'linux-arm64'">ubuntu-setup-arm.bin</AssemblyName>
     <PublishSingleFile>true</PublishSingleFile>
     <SelfContained>true</SelfContained>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
     <DebugType>embedded</DebugType>
   </PropertyGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="../main.sh" LogicalName="installer/main.sh" />
-    <EmbeddedResource Include="../src/*.sh" LogicalName="installer/src/%(Filename)%(Extension)" />
-  </ItemGroup>
 </Project>
