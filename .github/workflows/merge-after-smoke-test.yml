@@ -21,9 +21,13 @@ jobs:
       - name: Merge the tested commit
         env:
           GH_TOKEN: ${{ github.token }}
+        shell: bash
         run: |
           run_path="$(jq -r '.workflow_run.path' "$GITHUB_EVENT_PATH")"
-          [[ "${run_path%%@*}" == '.github/workflows/simulate-install.yml' ]] || exit 0
+          if [[ "${run_path%%@*}" != '.github/workflows/simulate-install.yml' ]]; then
+            echo "Ignoring unexpected workflow path: $run_path"
+            exit 0
+          fi
           sha="$(jq -er '.workflow_run.head_sha' "$GITHUB_EVENT_PATH")"
           branch="$(jq -er '.workflow_run.head_branch' "$GITHUB_EVENT_PATH")"
           owner="${GITHUB_REPOSITORY%%/*}"
@@ -40,4 +44,24 @@ jobs:
           fi
 
           gh api "repos/$GITHUB_REPOSITORY/pulls/$number/merge" --method PUT \
-            -f sha="$sha" -f merge_method=squash
+            -f sha="$sha" -f merge_method=squash | jq -e '.merged == true'
+
+          # Keep branches that are still used by another open PR.
+          if [[ "$branch" == main ]]; then
+            exit 0
+          fi
+          for filter in "base=$branch" "head=$owner:$branch"; do
+            open_count="$(gh api "repos/$GITHUB_REPOSITORY/pulls" --method GET \
+              -f state=open -f "$filter" --jq 'length')"
+            if [[ "$open_count" != 0 ]]; then
+              echo "Keeping $branch because another open PR uses it."
+              exit 0
+            fi
+          done
+
+          # Delete only if the branch still points to the commit we merged.
+          gh auth setup-git
+          git init -q "$RUNNER_TEMP/delete-merged-branch"
+          ref="refs/heads/$branch"
+          git -C "$RUNNER_TEMP/delete-merged-branch" push \
+            --force-with-lease="$ref:$sha" "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY.git" ":$ref"
