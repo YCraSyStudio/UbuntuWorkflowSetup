@@ -83,7 +83,12 @@ for tool in sudo getent dpkg-query snap apt-cache gpg curl unzip npm node \
   ln -s mock "$sandbox/bin/$tool"
 done
 
-bash main.sh <<< 'N'
+if (($#)); then
+  installer="$(realpath "$1")"
+  (cd "$sandbox" && "$installer") <<< 'N'
+else
+  bash main.sh <<< 'N'
+fi
 
 for expected in \
     'sudo apt install -y libatomic1' \
