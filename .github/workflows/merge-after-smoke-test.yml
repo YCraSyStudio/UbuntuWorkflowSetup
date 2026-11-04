@@ -21,9 +21,13 @@ jobs:
       - name: Merge the tested commit
         env:
           GH_TOKEN: ${{ github.token }}
+        shell: bash
         run: |
           run_path="$(jq -r '.workflow_run.path' "$GITHUB_EVENT_PATH")"
-          [[ "${run_path%%@*}" == '.github/workflows/simulate-install.yml' ]] || exit 0
+          if [[ "${run_path%%@*}" != '.github/workflows/simulate-install.yml' ]]; then
+            echo "Ignoring unexpected workflow path: $run_path"
+            exit 0
+          fi
           sha="$(jq -er '.workflow_run.head_sha' "$GITHUB_EVENT_PATH")"
           branch="$(jq -er '.workflow_run.head_branch' "$GITHUB_EVENT_PATH")"
           owner="${GITHUB_REPOSITORY%%/*}"
@@ -40,7 +44,7 @@ jobs:
           fi
 
           gh api "repos/$GITHUB_REPOSITORY/pulls/$number/merge" --method PUT \
-            -f sha="$sha" -f merge_method=squash
+            -f sha="$sha" -f merge_method=squash | jq -e '.merged == true'
 
           # Keep branches that are still used by another open PR.
           if [[ "$branch" == main ]]; then
