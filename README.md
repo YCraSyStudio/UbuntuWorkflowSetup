@@ -1,6 +1,6 @@
 # UbuntuWorkflowSetup
 
-Interactive installer to prepare an Ubuntu machine with development,
+Interactive .NET installer to prepare an Ubuntu machine with development,
 productivity, and GNOME extension applications.
 
 The script lets you choose which components to install and automates updating
@@ -19,18 +19,36 @@ operating system and stops the execution if the version is not compatible.
 
 ## Usage
 
-Clone the repository and enter its directory:
+Download the executable for your architecture from [GitHub Releases](https://github.com/YCraSyStudio/UbuntuWorkflowSetup/releases).
+Choose `linux-x64` for x86-64 or `linux-arm64` for ARM64. The executable includes
+the .NET runtime and the installer scripts. Bash and the Ubuntu system utilities
+are used to install the selected applications.
+
+For example, on x86-64:
 
 ```bash
-git clone https://github.com/YarCrasy/UbuntuWorkflowSetup.git
+chmod +x ubuntu-workflow-setup-linux-x64.bin
+./ubuntu-workflow-setup-linux-x64.bin
+```
+
+### Build from source
+
+With the .NET 10 SDK installed, clone the repository and publish for your architecture:
+
+```bash
+git clone https://github.com/YCraSyStudio/UbuntuWorkflowSetup.git
 cd UbuntuWorkflowSetup
 ```
 
-Run the installer:
+Publish and run the installer:
 
 ```bash
-bash main.sh
+dotnet publish installer/UbuntuWorkflowSetup.csproj -c Release -r linux-x64 -o ./publish
+./publish/ubuntu-workflow-setup
 ```
+
+Pushing a version tag such as `v1.0.0` runs the smoke test on both architectures
+and publishes the two binaries to GitHub Releases.
 
 When it starts you will be asked for your `sudo` password and the application
 selector will appear.
@@ -131,7 +149,7 @@ The installer shows a separate confirmation before rebooting.
 You can change some versions using environment variables. For example:
 
 ```bash
-DOTNET_VERSION=10.0 NODE_VERSION=26 bash main.sh
+DOTNET_VERSION=10.0 NODE_VERSION=26 ./publish/ubuntu-workflow-setup
 ```
 
 Available variables:
